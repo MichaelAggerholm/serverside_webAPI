@@ -13,10 +13,10 @@ namespace ClassLibrary.DataManager
         private DatabaseContext _repoContext;
 
         private IPersonRepository _PersonRepositoryWrapper;
-        private IEmployeeRepository _EmployeeRepositoryWrapper;
-        private IHTXStudentRepository _HTXStudentRepositoryWrapper;
-        private IEUDStudentRepository _EUDStudentRepositoryWrapper;
         private ISchoolRepository _SchoolRepositoryWrapper;
+        private IEmployeeRepository _EmployeesRepositoryWrapper;
+        private IEUDStudentRepository _EUDStudentRepositoryWrapper;
+        private IHTXStudentRepository _HTXStudentRepositoryWrapper;
 
         public RepositoryWrapper(DatabaseContext repositoryContext)
         {
@@ -40,14 +40,26 @@ namespace ClassLibrary.DataManager
         {
             get
             {
-                if (null == _EmployeeRepositoryWrapper)
+                if (null == _EmployeesRepositoryWrapper)
                 {
-                    _EmployeeRepositoryWrapper = new EmployeeRepository(_repoContext);
+                    _EmployeesRepositoryWrapper = new EmployeeRepository(_repoContext);
                 }
 
-                return (_EmployeeRepositoryWrapper);
+                return (_EmployeesRepositoryWrapper);
             }
+        }
 
+        public IEUDStudentRepository EUDStudentRepositoryWrapper
+        {
+            get
+            {
+                if (null == _EUDStudentRepositoryWrapper)
+                {
+                    _EUDStudentRepositoryWrapper = new EUDStudentRepository(_repoContext);
+                }
+
+                return (_EUDStudentRepositoryWrapper);
+            }
         }
 
         public IHTXStudentRepository HTXStudentRepositoryWrapper
@@ -63,18 +75,6 @@ namespace ClassLibrary.DataManager
             }
         }
 
-        public IEUDStudentRepository EUDStudentRepositoryWrapper
-        {
-            get
-            {
-                if (null == _HTXStudentRepositoryWrapper)
-                {
-                    _EUDStudentRepositoryWrapper = new EUDStudentRepository(_repoContext);
-                }
-
-                return (_EUDStudentRepositoryWrapper);
-            }
-        }
 
         public ISchoolRepository SchoolRepositoryWrapper
         {

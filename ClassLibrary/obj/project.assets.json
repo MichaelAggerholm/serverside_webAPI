@@ -32,6 +32,29 @@
           "lib/netstandard2.0/Humanizer.dll": {}
         }
       },
+      "Mapster/7.2.0": {
+        "type": "package",
+        "dependencies": {
+          "Mapster.Core": "1.2.0",
+          "Microsoft.CSharp": "4.3.0",
+          "System.Reflection.Emit": "4.3.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/Mapster.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Mapster.dll": {}
+        }
+      },
+      "Mapster.Core/1.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/Mapster.Core.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/Mapster.Core.dll": {}
+        }
+      },
       "Microsoft.AspNetCore.Html.Abstractions/2.2.0": {
         "type": "package",
         "dependencies": {
@@ -2745,6 +2768,38 @@
         "lib/netstandard2.0/Humanizer.dll",
         "lib/netstandard2.0/Humanizer.xml",
         "logo.png"
+      ]
+    },
+    "Mapster/7.2.0": {
+      "sha512": "dIXWyCPHrzcQ7Aeblz/bKxsP9ZxGMMbHZTyywZS7/cGa9elPcJiTNeJ4OahzLtATzL13xC4MF8NRNcj49cCIng==",
+      "type": "package",
+      "path": "mapster/7.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "icon.png",
+        "lib/net40/Mapster.dll",
+        "lib/net45/Mapster.dll",
+        "lib/netstandard1.3/Mapster.dll",
+        "lib/netstandard2.0/Mapster.dll",
+        "mapster.7.2.0.nupkg.sha512",
+        "mapster.nuspec"
+      ]
+    },
+    "Mapster.Core/1.2.0": {
+      "sha512": "TNdqZk2zAuBYfJF88D/3clQTOyOdqr1crU81yZQtlGa+e7FYWhJdK/buBWT+TpM3qQko9UzmzfOT4iq3JCs/ZA==",
+      "type": "package",
+      "path": "mapster.core/1.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "icon.png",
+        "lib/net40/Mapster.Core.dll",
+        "lib/net45/Mapster.Core.dll",
+        "lib/netstandard1.3/Mapster.Core.dll",
+        "lib/netstandard2.0/Mapster.Core.dll",
+        "mapster.core.1.2.0.nupkg.sha512",
+        "mapster.core.nuspec"
       ]
     },
     "Microsoft.AspNetCore.Html.Abstractions/2.2.0": {
@@ -8944,6 +8999,7 @@
   },
   "projectFileDependencyGroups": {
     "net5.0": [
+      "Mapster >= 7.2.0",
       "Microsoft.EntityFrameworkCore >= 5.0.0",
       "Microsoft.EntityFrameworkCore.Design >= 5.0.0",
       "Microsoft.EntityFrameworkCore.Proxies >= 5.0.0",
@@ -8959,11 +9015,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\92agg\\Desktop\\Web_API\\ClassLibrary\\ClassLibrary.csproj",
+      "projectUniqueName": "c:\\Users\\92agg\\Desktop\\Web_API\\ClassLibrary\\ClassLibrary.csproj",
       "projectName": "ClassLibrary",
-      "projectPath": "C:\\Users\\92agg\\Desktop\\Web_API\\ClassLibrary\\ClassLibrary.csproj",
+      "projectPath": "c:\\Users\\92agg\\Desktop\\Web_API\\ClassLibrary\\ClassLibrary.csproj",
       "packagesPath": "C:\\Users\\92agg\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\92agg\\Desktop\\Web_API\\ClassLibrary\\obj\\",
+      "outputPath": "c:\\Users\\92agg\\Desktop\\Web_API\\ClassLibrary\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -8996,6 +9052,10 @@
       "net5.0": {
         "targetAlias": "net5.0",
         "dependencies": {
+          "Mapster": {
+            "target": "Package",
+            "version": "[7.2.0, )"
+          },
           "Microsoft.EntityFrameworkCore": {
             "target": "Package",
             "version": "[5.0.0, )"

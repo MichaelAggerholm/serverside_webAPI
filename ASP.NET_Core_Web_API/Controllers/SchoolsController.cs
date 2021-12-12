@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using ClassLibrary.Content;
 using ClassLibrary.Models;
 using ClassLibrary.Interfaces;
+using Mapster;
+using ClassLibrary.DTO;
+using ASP.NET_Core_Web_API.Extensions;
 
 namespace ASP.NET_Core_Web_API.Controllers
 {
@@ -15,64 +18,92 @@ namespace ASP.NET_Core_Web_API.Controllers
     [ApiController]
     public class SchoolsController : ControllerBase
     {
-        private readonly DatabaseContext _context;
         private IRepositoryWrapper _repositoryWrapper;
 
-        public SchoolsController(DatabaseContext context, IRepositoryWrapper repositoryWrapper)
+        public SchoolsController(IRepositoryWrapper repositoryWrapper)
         {
-            _context = context;
             _repositoryWrapper = repositoryWrapper;
         }
 
         // GET: api/Schools
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<School>>> GetSchools()
+        public async Task<ActionResult<IEnumerable<School>>> GetSchools(bool includeRelations = true,
+                                                                        string UserName = "No Name")
         {
-            _repositoryWrapper.EmployeeRepositoryWrapper.DisableLazyLoading();
-            return Ok(await _repositoryWrapper.EmployeeRepositoryWrapper.FindAll());
+            var schoolList = await _repositoryWrapper.SchoolRepositoryWrapper.FindAll();
+
+            if ((false == includeRelations))
+            {
+                _repositoryWrapper.SchoolRepositoryWrapper.DisableLazyLoading();
+            }
+            else  // true == includeRelations && true == UseLazyLoading 
+            {
+                _repositoryWrapper.SchoolRepositoryWrapper.EnableLazyLoading();
+            }
+
+            List<SchoolDto> SchoolDtos = schoolList.Adapt<SchoolDto[]>().ToList();
+
+            return Ok(SchoolDtos);
+
             //return await _context.Schools.ToListAsync();
         }
 
         // GET: api/Schools/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<School>> GetSchool(int id)
+        public async Task<ActionResult<School>> GetSchool(int id,
+                                                          bool includeRelations = true,
+                                                          string UserName = "No Name")
         {
-            var school = await _context.Schools.FindAsync(id);
+            if (false == includeRelations)
+            {
+                _repositoryWrapper.SchoolRepositoryWrapper.DisableLazyLoading();
+            }
+            else
+            {
+                _repositoryWrapper.SchoolRepositoryWrapper.EnableLazyLoading();
+            }
 
-            if (school == null)
+            var School_Object = await _repositoryWrapper.SchoolRepositoryWrapper.FindOne(id);
+
+            if (School_Object == null)
             {
                 return NotFound();
             }
+            else
+            {
 
-            return school;
+                SchoolDto SchoolDto_Object = School_Object.Adapt<SchoolDto>();
+                return Ok(SchoolDto_Object);
+            }
         }
 
         // PUT: api/Schools/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutSchool(int id, School school)
+        public async Task<IActionResult> UpdateSchool(int id,
+                                                      [FromBody] SchoolDto SchoolDto_Object,
+                                                      string UserName = "No Name")
         {
-            if (id != school.SchoolID)
+            if (id != SchoolDto_Object.SchoolID)
             {
                 return BadRequest();
             }
 
-            _context.Entry(school).State = EntityState.Modified;
-
-            try
+            if (!ModelState.IsValid)
             {
-                await _context.SaveChangesAsync();
+                return BadRequest(ModelState);
             }
-            catch (DbUpdateConcurrencyException)
+
+            var SchoolFromRepo = await _repositoryWrapper.SchoolRepositoryWrapper.FindOne(id);
+
+            if (null == SchoolFromRepo)
             {
-                if (!SchoolExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                return NotFound();
+            }
+
+            if (SchoolFromRepo.CloneData<School>(SchoolDto_Object))
+            {
+                await _repositoryWrapper.SchoolRepositoryWrapper.Update(SchoolFromRepo);
             }
 
             return NoContent();
@@ -81,33 +112,43 @@ namespace ASP.NET_Core_Web_API.Controllers
         // POST: api/Schools
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<School>> PostSchool(School school)
+        public async Task<ActionResult<School>> CreateSchool([FromBody] SchoolForSaveDto SchoolDto_Object,
+                                                             string UserName = "No Name")
         {
-            _context.Schools.Add(school);
-            await _context.SaveChangesAsync();
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction("GetSchool", new { id = school.SchoolID }, school);
+            School School_Object = SchoolDto_Object.Adapt<School>();
+
+            await _repositoryWrapper.SchoolRepositoryWrapper.Create(School_Object);
+
+            return Ok(School_Object.SchoolID);
         }
 
         // DELETE: api/Schools/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteSchool(int id)
+        public async Task<IActionResult> DeleteCountry(int id,
+                                                       string UserName = "No Name")
         {
-            var school = await _context.Schools.FindAsync(id);
-            if (school == null)
+            _repositoryWrapper.SchoolRepositoryWrapper.DisableLazyLoading();
+
+            var SchoolFromRepo = await _repositoryWrapper.SchoolRepositoryWrapper.FindOne(id);
+
+            if (null == SchoolFromRepo)
             {
                 return NotFound();
             }
 
-            _context.Schools.Remove(school);
-            await _context.SaveChangesAsync();
+            await _repositoryWrapper.SchoolRepositoryWrapper.Delete(SchoolFromRepo);
 
             return NoContent();
         }
 
         private bool SchoolExists(int id)
         {
-            return _context.Schools.Any(e => e.SchoolID == id);
+            return (null != _repositoryWrapper.SchoolRepositoryWrapper.FindOne(id));
         }
     }
 }

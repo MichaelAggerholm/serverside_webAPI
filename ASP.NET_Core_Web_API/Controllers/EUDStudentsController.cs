@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using ClassLibrary.Content;
 using ClassLibrary.Models;
 using ClassLibrary.Interfaces;
+using Mapster;
+using ClassLibrary.DTO;
+using ASP.NET_Core_Web_API.Extensions;
 
 namespace ASP.NET_Core_Web_API.Controllers
 {
@@ -24,38 +27,82 @@ namespace ASP.NET_Core_Web_API.Controllers
 
         // GET: api/EUDStudents
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<EUDStudent>>> GetEUDStudents()
+        public async Task<ActionResult<IEnumerable<EUDStudent>>> GetEUDStudents(bool includeRelations = true,
+                                                                                string UserName = "No Name")
         {
-            _repositoryWrapper.EUDStudentRepositoryWrapper.DisableLazyLoading();
-            return Ok(await _repositoryWrapper.EUDStudentRepositoryWrapper.FindAll());
+            var EUDStudentList = await _repositoryWrapper.EUDStudentRepositoryWrapper.FindAll();
+
+            if ((false == includeRelations))
+            {
+                _repositoryWrapper.EUDStudentRepositoryWrapper.DisableLazyLoading();
+            }
+            else  // true == includeRelations && true == UseLazyLoading 
+            {
+                _repositoryWrapper.EUDStudentRepositoryWrapper.EnableLazyLoading();
+            }
+
+            List<EUDStudentDto> EUDStudentDtos = EUDStudentList.Adapt<EUDStudentDto[]>().ToList();
+
+            return Ok(EUDStudentDtos);
         }
 
         // GET: api/EUDStudents/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<EUDStudent>> GetEUDStudent(int id)
+        public async Task<ActionResult<EUDStudent>> GetEUDStudent(int id,
+                                                                  bool includeRelations = true,
+                                                                  string UserName = "No Name")
         {
-            _repositoryWrapper.EUDStudentRepositoryWrapper.DisableLazyLoading();
-            var eUDStudent = await _repositoryWrapper.EUDStudentRepositoryWrapper.FindOne(id);
+            if (false == includeRelations)
+            {
+                _repositoryWrapper.EUDStudentRepositoryWrapper.DisableLazyLoading();
+            }
+            else
+            {
+                _repositoryWrapper.EUDStudentRepositoryWrapper.EnableLazyLoading();
+            }
 
-            if (eUDStudent == null)
+            var EUDStudent_Object = await _repositoryWrapper.EUDStudentRepositoryWrapper.FindOne(id);
+
+            if (EUDStudent_Object == null)
             {
                 return NotFound();
             }
+            else
+            {
 
-            return eUDStudent;
+                EUDStudentDto EUDStudentDto_Object = EUDStudent_Object.Adapt<EUDStudentDto>();
+                return Ok(EUDStudent_Object);
+            }
         }
 
         // PUT: api/EUDStudents/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEUDStudent(int id, EUDStudent eUDStudent)
+        public async Task<IActionResult> PutEUDStudent(int id,
+                                                       [FromBody] EUDStudentDto EUDStudentDto_Object,
+                                                       string UserName = "No Name")
         {
-            if (id != eUDStudent.PersonID)
+            if (id != EUDStudentDto_Object.SchoolID) //<--- idk
             {
                 return BadRequest();
             }
 
-            await _repositoryWrapper.EUDStudentRepositoryWrapper.Update(eUDStudent);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var EUDStudentFromRepo = await _repositoryWrapper.EUDStudentRepositoryWrapper.FindOne(id);
+
+            if (null == EUDStudentFromRepo)
+            {
+                return NotFound();
+            }
+
+            if (EUDStudentFromRepo.CloneData<EUDStudent>(EUDStudentDto_Object))
+            {
+                await _repositoryWrapper.EUDStudentRepositoryWrapper.Update(EUDStudentFromRepo);
+            }
 
             return NoContent();
         }
@@ -63,31 +110,43 @@ namespace ASP.NET_Core_Web_API.Controllers
         // POST: api/EUDStudents
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<EUDStudent>> PostEUDStudent(EUDStudent eUDStudent)
+        public async Task<ActionResult<EUDStudent>> PostEUDStudent([FromBody] EUDStudentForSaveDto EUDStudentDto_Object,
+                                                                   string UserName = "No Name")
         {
-            await _repositoryWrapper.EUDStudentRepositoryWrapper.Create(eUDStudent);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction("GetEUDStudent", new { id = eUDStudent.PersonID }, eUDStudent);
+            EUDStudent EUDStudent_Object = EUDStudentDto_Object.Adapt<EUDStudent>();
+
+            await _repositoryWrapper.EUDStudentRepositoryWrapper.Create(EUDStudent_Object);
+
+            return Ok(EUDStudent_Object.SchoolID);
         }
 
         // DELETE: api/EUDStudents/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEUDStudent(int id)
+        public async Task<IActionResult> DeleteEUDStudent(int id,
+                                                          string UserName = "No Name")
         {
-            var eUDStudent = await _repositoryWrapper.EmployeeRepositoryWrapper.FindOne(id);
-            if (eUDStudent == null)
+            _repositoryWrapper.EUDStudentRepositoryWrapper.DisableLazyLoading();
+
+            var EUDStudentFromRepo = await _repositoryWrapper.EUDStudentRepositoryWrapper.FindOne(id);
+
+            if (null == EUDStudentFromRepo)
             {
                 return NotFound();
             }
 
-            await _repositoryWrapper.EmployeeRepositoryWrapper.Delete(eUDStudent);
+            await _repositoryWrapper.EUDStudentRepositoryWrapper.Delete(EUDStudentFromRepo);
 
             return NoContent();
         }
 
         private bool EUDStudentExists(int id)
         {
-            return (null != _repositoryWrapper.EmployeeRepositoryWrapper.FindOne(id));
+            return (null != _repositoryWrapper.EUDStudentRepositoryWrapper.FindOne(id));
         }
     }
 }

@@ -8,6 +8,9 @@ using Microsoft.EntityFrameworkCore;
 using ClassLibrary.Content;
 using ClassLibrary.Models;
 using ClassLibrary.Interfaces;
+using ClassLibrary.DTO;
+using Mapster;
+using ASP.NET_Core_Web_API.Extensions;
 
 namespace ASP.NET_Core_Web_API.Controllers
 {
@@ -24,37 +27,82 @@ namespace ASP.NET_Core_Web_API.Controllers
 
         // GET: api/HTXStudents
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<HTXStudent>>> GetHTXStudents()
+        public async Task<ActionResult<IEnumerable<HTXStudent>>> GetHTXStudents(bool includeRelations = true,
+                                                                                string UserName = "No Name")
         {
-            _repositoryWrapper.HTXStudentRepositoryWrapper.DisableLazyLoading();
-            return Ok(await _repositoryWrapper.HTXStudentRepositoryWrapper.FindAll());
+            var HTXStudentList = await _repositoryWrapper.HTXStudentRepositoryWrapper.FindAll();
+
+            if ((false == includeRelations))
+            {
+                _repositoryWrapper.HTXStudentRepositoryWrapper.DisableLazyLoading();
+            }
+            else  // true == includeRelations && true == UseLazyLoading 
+            {
+                _repositoryWrapper.HTXStudentRepositoryWrapper.EnableLazyLoading();
+            }
+
+            List<HTXStudentDto> HTXStudentDtos = HTXStudentList.Adapt<HTXStudentDto[]>().ToList();
+
+            return Ok(HTXStudentDtos);
         }
 
         // GET: api/HTXStudents/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<HTXStudent>> GetHTXStudent(int id)
+        public async Task<ActionResult<HTXStudent>> GetHTXStudent(int id,
+                                                                  bool includeRelations = true,
+                                                                  string UserName = "No Name")
         {
-            var hTXStudent = await _repositoryWrapper.HTXStudentRepositoryWrapper.FindOne(id);
+            if (false == includeRelations)
+            {
+                _repositoryWrapper.HTXStudentRepositoryWrapper.DisableLazyLoading();
+            }
+            else
+            {
+                _repositoryWrapper.HTXStudentRepositoryWrapper.EnableLazyLoading();
+            }
 
-            if (hTXStudent == null)
+            var HTXStudent_Object = await _repositoryWrapper.HTXStudentRepositoryWrapper.FindOne(id);
+
+            if (HTXStudent_Object == null)
             {
                 return NotFound();
             }
+            else
+            {
 
-            return hTXStudent;
+                HTXStudentDto HTXStudentDto_Object = HTXStudent_Object.Adapt<HTXStudentDto>();
+                return Ok(HTXStudent_Object);
+            }
         }
 
         // PUT: api/HTXStudents/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> HTXStudent(int id, HTXStudent htxstudent)
+        public async Task<IActionResult> HTXStudent(int id,
+                                                    [FromBody] HTXStudentDto HTXStudentDto_Object,
+                                                    string UserName = "No Name")
         {
-            if (id != htxstudent.PersonID)
+            if (id != HTXStudentDto_Object.SchoolID) //<--- idk
             {
                 return BadRequest();
             }
 
-            await _repositoryWrapper.HTXStudentRepositoryWrapper.Update(htxstudent);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var HTXStudentFromRepo = await _repositoryWrapper.HTXStudentRepositoryWrapper.FindOne(id);
+
+            if (null == HTXStudentFromRepo)
+            {
+                return NotFound();
+            }
+
+            if (HTXStudentFromRepo.CloneData<HTXStudent>(HTXStudentDto_Object))
+            {
+                await _repositoryWrapper.HTXStudentRepositoryWrapper.Update(HTXStudentFromRepo);
+            }
 
             return NoContent();
         }
@@ -62,24 +110,36 @@ namespace ASP.NET_Core_Web_API.Controllers
         // POST: api/HTXStudents
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Employee>> HTXStudent(HTXStudent htxstudent)
+        public async Task<ActionResult<Employee>> HTXStudent([FromBody] HTXStudentForSaveDto HTXStudentDto_Object,
+                                                             string UserName = "No Name")
         {
-            await _repositoryWrapper.HTXStudentRepositoryWrapper.Create(htxstudent);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
 
-            return CreatedAtAction("GetHTXStudent", new { id = htxstudent.PersonID }, htxstudent);
+            HTXStudent HTXStudent_Object = HTXStudentDto_Object.Adapt<HTXStudent>();
+
+            await _repositoryWrapper.HTXStudentRepositoryWrapper.Create(HTXStudent_Object);
+
+            return Ok(HTXStudent_Object.SchoolID);
         }
 
         // DELETE: api/HTXStudents/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteHTXStudent(int id)
+        public async Task<IActionResult> DeleteHTXStudent(int id,
+                                                          string UserName = "No Name")
         {
-            var htxstudent = await _repositoryWrapper.HTXStudentRepositoryWrapper.FindOne(id);
-            if (htxstudent == null)
+            _repositoryWrapper.HTXStudentRepositoryWrapper.DisableLazyLoading();
+
+            var HTXStudentFromRepo = await _repositoryWrapper.HTXStudentRepositoryWrapper.FindOne(id);
+
+            if (null == HTXStudentFromRepo)
             {
                 return NotFound();
             }
 
-            await _repositoryWrapper.HTXStudentRepositoryWrapper.Delete(htxstudent);
+            await _repositoryWrapper.HTXStudentRepositoryWrapper.Delete(HTXStudentFromRepo);
 
             return NoContent();
         }

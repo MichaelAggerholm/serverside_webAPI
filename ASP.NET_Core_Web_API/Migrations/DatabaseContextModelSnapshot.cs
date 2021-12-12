@@ -14,16 +14,16 @@ namespace ASP.NET_Core_Web_API.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .UseIdentityColumns()
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.12")
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.0");
 
             modelBuilder.Entity("ClassLibrary.Models.School", b =>
                 {
                     b.Property<int>("SchoolID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<string>("SchoolName")
                         .IsRequired()
@@ -40,7 +40,7 @@ namespace ASP.NET_Core_Web_API.Migrations
                     b.Property<int>("PersonID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .UseIdentityColumn();
 
                     b.Property<string>("PersonName")
                         .IsRequired()
@@ -111,7 +111,7 @@ namespace ASP.NET_Core_Web_API.Migrations
                     b.HasOne("ClassLibrary.Models.School", "School")
                         .WithMany("Persons")
                         .HasForeignKey("SchoolID")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("School");

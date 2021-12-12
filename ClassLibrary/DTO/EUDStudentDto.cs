@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace ClassLibrary.DTO
 {
-    public class EUDStudentForSaveDto
+    public class EUDStudentForSaveDto : StudentForSaveDto
     {
         [Required]
         public string BusinessEducation { get; set; }
 
     }
 
-    public class EUDStudentForUpdateDto : PersonForSaveDto
+    public class EUDStudentForUpdateDto : EUDStudentForSaveDto
     {
         public int PersonID { get; set; }
     }
@@ -22,5 +22,10 @@ namespace ClassLibrary.DTO
     public class StudentDtoNoStudent : PersonForUpdateDto
     {
 
+    }
+
+    public class EUDStudentDto : PersonForUpdateDto
+    {
+        public List<PersonDtoNoSchool> Persons { get; set; }
     }
 }

@@ -17,13 +17,18 @@ namespace ClassLibrary.DTO
 
     }
 
-    public class EmployeeForUpdateDto : PersonForSaveDto
+    public class EmployeeForUpdateDto : EmployeeForSaveDto
     {
-        public int PersonlID { get; set; }
+        public int PersonID { get; set; }
     }
 
     public class PersonDtoNoPerson : SchoolForUpdateDto
     {
 
+    }
+
+    public class EmployeeDto : PersonForUpdateDto
+    {
+        public List<PersonDtoNoSchool> Persons { get; set; }
     }
 }

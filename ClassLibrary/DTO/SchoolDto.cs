@@ -25,7 +25,7 @@ namespace ClassLibrary.DTO
 
     }
 
-    public class ShoolDto : SchoolForUpdateDto
+    public class SchoolDto : SchoolForUpdateDto
     {
         public List<PersonDtoNoSchool> Persons { get; set; }
     }

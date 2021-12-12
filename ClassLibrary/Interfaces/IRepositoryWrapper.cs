@@ -14,9 +14,9 @@ namespace ClassLibrary.Interfaces
 
         IEmployeeRepository EmployeeRepositoryWrapper { get; }
 
-        IHTXStudentRepository HTXStudentRepositoryWrapper { get; }
-
         IEUDStudentRepository EUDStudentRepositoryWrapper { get; }
+
+        IHTXStudentRepository HTXStudentRepositoryWrapper { get; }
 
         void Save();
 

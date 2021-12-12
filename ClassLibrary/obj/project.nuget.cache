@@ -1,11 +1,13 @@
 {
   "version": 2,
-  "dgSpecHash": "BKNthdfEQcJUqtifUIk818IqrRtEECksvkh0skJIbI0R8ehjRnc3FCdjMETrxLdJUEchxwRxbLlZFVJDgTaKVA==",
+  "dgSpecHash": "gSeH0gJbMYVlZjjii7OGLIcXl9xG6zPKADonqtn2mqA3GNdVA73lyWQciTRSjAop4Ivijo8vUKhjeHov63CsaA==",
   "success": true,
   "projectFilePath": "C:\\Users\\92agg\\Desktop\\Web_API\\ClassLibrary\\ClassLibrary.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\92agg\\.nuget\\packages\\castle.core\\4.4.1\\castle.core.4.4.1.nupkg.sha512",
     "C:\\Users\\92agg\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
+    "C:\\Users\\92agg\\.nuget\\packages\\mapster\\7.2.0\\mapster.7.2.0.nupkg.sha512",
+    "C:\\Users\\92agg\\.nuget\\packages\\mapster.core\\1.2.0\\mapster.core.1.2.0.nupkg.sha512",
     "C:\\Users\\92agg\\.nuget\\packages\\microsoft.aspnetcore.html.abstractions\\2.2.0\\microsoft.aspnetcore.html.abstractions.2.2.0.nupkg.sha512",
     "C:\\Users\\92agg\\.nuget\\packages\\microsoft.aspnetcore.razor\\2.2.0\\microsoft.aspnetcore.razor.2.2.0.nupkg.sha512",
     "C:\\Users\\92agg\\.nuget\\packages\\microsoft.aspnetcore.razor.language\\5.0.0\\microsoft.aspnetcore.razor.language.5.0.0.nupkg.sha512",
